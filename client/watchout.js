@@ -35,7 +35,6 @@ const createEnemies = function() {
   }
   return allEnemies;
 };
-var allEnemies = createEnemies();
 
 var initiateEnemies = function(allEnemies) {
   d3.select('.container').selectAll('.container').data(allEnemies).enter().append('circle')
@@ -45,9 +44,19 @@ var initiateEnemies = function(allEnemies) {
                                                                           .attr('r', 10);
 };
 
+var moveEnemies = function(allEnemies) {
+  d3.selectAll('.enemy').transition().duration(1000)
+                                     .attr('cx', enemy => Math.random() * gameOptions.width)
+                                     .attr('cy', enemy => Math.random() * gameOptions.height);
+};
+
+
+var allEnemies = createEnemies();
 initiateEnemies(allEnemies);
 
-
+setInterval(function() {
+  moveEnemies(allEnemies);
+}, 1000);
 
 
 
