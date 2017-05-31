@@ -3,7 +3,8 @@ const gameOptions = {
   height: 450,
   width: 700,
   nEnemies: 5,
-  padding: 20
+  padding: 20,
+  objectSizes: 10
 };
 
 // const axes = {
@@ -53,27 +54,62 @@ const initiatePlayer = function() {
 
   d3.select('.container').append('circle')
                          .attr('class', 'player')
-                         .attr('r', 10)
+                         .attr('r', gameOptions.objectSizes)
                          .attr('fill', 'orange')
                          .data([ {'x': playerPiece.x, 'y': playerPiece.y} ])
                          .attr('transform', 'translate(' + playerPiece.x + ',' + playerPiece.y + ')')
                          .call(drag);
 };
 
-var initiateEnemies = function(allEnemies) {
+const initiateEnemies = function(allEnemies) {
   d3.select('.container').selectAll('.container').data(allEnemies).enter().append('circle')
                                                                           .attr('class', 'enemy')
+                                                                          .attr('id', (enemy) => 'e' + enemy.id)
                                                                           .attr('cx', (enemy) => enemy.x)
                                                                           .attr('cy', (enemy) => enemy.y)
-                                                                          .attr('r', 10)
+                                                                          .attr('r', gameOptions.objectSizes)
                                                                           .attr('fill', 'purple');
                                                                           
 };
 
-var moveEnemies = function(allEnemies) {
+const moveEnemies = function(allEnemies) {
   d3.selectAll('.enemy').transition().duration(1000)
                                      .attr('cx', enemy => Math.random() * gameOptions.width)
                                      .attr('cy', enemy => Math.random() * gameOptions.height);
+};
+
+//translate(225,350)
+
+const checkCollision = function () {
+  let player = d3.select('.player');
+
+  let transformText = player.attr('transform');
+  let commaIndex = transformText.indexOf(',');
+  let playerX = transformText.slice(10, commaIndex);
+  let playerY = transformText.slice(commaIndex + 1, transformText.length - 1);
+  let playerR = gameOptions.objectSizes;
+
+  
+  for (var i = 0; i < gameOptions.nEnemies; i++) {
+    let enemyX = d3.select('#e' + i).attr('cx');
+    let enemyY = d3.select('#e' + i).attr('cy');
+
+    let distance = Math.sqrt(Math.pow(playerX - enemyX, 2) + Math.pow(playerY - enemyY, 2));
+    if (distance < (2 * gameOptions.objectSizes)) {
+      console.log(distance);
+    }
+  }
+
+
+
+  // console.log('enemies', enemies);
+  // enemies[0].forEach(function(enemy) {
+  //   let enemyX = enemy.attr('transform').translate;
+  //   console.log('enemyX', enemyX);
+  // });
+  // within each enemy, calculate the distance from enemy and current position of player
+    // if distance is < 0, then console log!
+
 };
 
 
@@ -81,19 +117,13 @@ var allEnemies = createEnemies();
 initiateEnemies(allEnemies);
 initiatePlayer();
 
-// d3.select('.player').call(d3.behavior.drag().on('start', started));
-// d3.select('.player').behavior.drag();
-
-// var drag = d3.behavior.drag();
-// d3.select('.player').call(drag);
-// d3.select('.player').on(drag, console.log('woo'));
-
-
-
 setInterval(function() {
   moveEnemies(allEnemies);
 }, 1000);
 
+setInterval(function() {
+  checkCollision();
+}, 1);
 
 
 
