@@ -2,7 +2,7 @@
 const gameOptions = {
   height: 450,
   width: 700,
-  nEnemies: 30,
+  nEnemies: 5,
   padding: 20
 };
 
@@ -36,12 +36,38 @@ const createEnemies = function() {
   return allEnemies;
 };
 
+var drag = d3.behavior.drag()
+                      .on('drag', function(d, i) {
+                        d.x += d3.event.dx;
+                        d.y += d3.event.dy;
+                        d3.select(this).attr('transform', function(d, i) {
+                          return 'translate(' + [ d.x, d.y ] + ')';
+                        });
+                      });
+
+const initiatePlayer = function() {
+  var playerPiece = {
+    y: gameOptions.width / 2,
+    x: gameOptions.height / 2
+  };
+
+  d3.select('.container').append('circle')
+                         .attr('class', 'player')
+                         .attr('r', 10)
+                         .attr('fill', 'orange')
+                         .data([ {'x': playerPiece.x, 'y': playerPiece.y} ])
+                         .attr('transform', 'translate(' + playerPiece.x + ',' + playerPiece.y + ')')
+                         .call(drag);
+};
+
 var initiateEnemies = function(allEnemies) {
   d3.select('.container').selectAll('.container').data(allEnemies).enter().append('circle')
                                                                           .attr('class', 'enemy')
                                                                           .attr('cx', (enemy) => enemy.x)
                                                                           .attr('cy', (enemy) => enemy.y)
-                                                                          .attr('r', 10);
+                                                                          .attr('r', 10)
+                                                                          .attr('fill', 'purple');
+                                                                          
 };
 
 var moveEnemies = function(allEnemies) {
@@ -53,6 +79,16 @@ var moveEnemies = function(allEnemies) {
 
 var allEnemies = createEnemies();
 initiateEnemies(allEnemies);
+initiatePlayer();
+
+// d3.select('.player').call(d3.behavior.drag().on('start', started));
+// d3.select('.player').behavior.drag();
+
+// var drag = d3.behavior.drag();
+// d3.select('.player').call(drag);
+// d3.select('.player').on(drag, console.log('woo'));
+
+
 
 setInterval(function() {
   moveEnemies(allEnemies);

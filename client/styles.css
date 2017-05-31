@@ -8,6 +8,9 @@ Feel free to use it if you like. */
 }*/
 
 .enemy {
-  background-color: blue;
+  border-color: blue;
 }
 
+.player {
+  
+}
